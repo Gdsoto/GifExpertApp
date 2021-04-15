@@ -1,33 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import useFetchGifs from '../hooks/useFetchGifs';
+import GifGridItem from './GifGridItem';
 
 const GifGrid = ({ category }) => {
-	const [images, setImages] = useState([]);
-
-	useEffect(() => {
-		getGifs();
-	}, []);
-
-	const getGifs = async () => {
-		const url =
-			'https://api.giphy.com/v1/gifs/search?q=Wanda&limit=10&api_key=xkk6MGZIZ1hBlKBa8JkjzONUh994PrAb';
-
-		const resp = await fetch(url);
-		const { data } = await resp.json();
-
-		const gifs = data.map((img) => {
-			return {
-				id: img.id,
-				title: img.title,
-				url: img.images?.downsized_medium.url,
-			};
-		});
-
-		setImages(gifs);
-	};
+	const { data: images, loading } = useFetchGifs(category); //--> customHook
 
 	return (
 		<>
 			<div>{category}</div>
+			{loading && <p>Loading</p>}
+			{
+				<div className="cardGrid">
+					<div>
+						{images.map((img) => (
+							<GifGridItem key={img.id} {...img} />
+							//--->envia como parametro un spread con el objeto img
+						))}
+					</div>
+				</div>
+			}
 		</>
 	);
 };
